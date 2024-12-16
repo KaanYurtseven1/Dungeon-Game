@@ -423,9 +423,11 @@ void pickup(Player *player, const char *item_name) {
         printf("There are no items in this room.\n");
         return;
     }
+    
     char clean_item_name[100];
     strncpy(clean_item_name, item_name, sizeof(clean_item_name) - 1);
     clean_item_name[strcspn(clean_item_name, "\n")] = '\0';
+
     int inventory_count = 0;
     Item *temp = player->inventory;
     while (temp != NULL) {
@@ -436,19 +438,22 @@ void pickup(Player *player, const char *item_name) {
         printf("Your inventory is full. Drop an item to pick this one up.\n");
         return;
     }
+    
     Item *current = player->current_room->items;
     Item *prev = NULL;
 
     while (current != NULL) {
         if (strcmp(current->name, clean_item_name) == 0) {
-            current->next = player->inventory;
-            player->inventory = current;
+            
             if (prev == NULL) {
                 player->current_room->items = current->next;
             } else {
                 prev->next = current->next;
             }
-            current->next = NULL;  
+
+            current->next = player->inventory; 
+            player->inventory = current; 
+
             printf("You picked up %s.\n", clean_item_name);
             if (strcmp(clean_item_name, "Sword") == 0) {
                 player->strength += 5;
@@ -469,12 +474,13 @@ void pickup(Player *player, const char *item_name) {
             } else if (strcmp(clean_item_name, "Ancient Paper") == 0) {
                 printf("You found the Code to the Locked Shadow Rooms. The Code is: 1423\n");
             }
-            player->inventory_capacity--;
+            player->inventory_capacity--; 
             return;
         }
         prev = current;
         current = current->next;
     }
+    
     printf("There is no %s in this room.\n", clean_item_name);
 }
 
@@ -692,10 +698,3 @@ void load(Player *player, const char *filepath) {
     fclose(file);
     printf("Game loaded successfully from %s\n", filepath);
 }
-
-
-
-
-
-
-
